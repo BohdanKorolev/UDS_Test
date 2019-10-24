@@ -7,7 +7,7 @@ namespace CSharpTest
         public DateTime Calculate(DateTime startDate, int dayCount, WeekEnd[] weekEnds)
         {
             DateTime endDate = startDate;
-            int weekendsDuration = 1;
+            int weekendsDuration;
 
             if (weekEnds == null)
             {
@@ -15,15 +15,24 @@ namespace CSharpTest
             }
             else
             {
-                for (int i = 1, j = 0; i < dayCount; i++)
+                for (int i = 1, j = 0; i < dayCount;)
                 {
-                    if ((j < weekEnds.Length) && (endDate == weekEnds[j].StartDate))
+                    if ((j < weekEnds.Length) && (startDate >= weekEnds[j].StartDate) && (startDate <= weekEnds[j].EndDate))
                     {
+                        endDate = endDate.AddDays((weekEnds[j].EndDate.Day - startDate.Day)+1);
+                        j++;
+                    }else if ((j < weekEnds.Length) && (endDate == weekEnds[j].StartDate))
+                    {
+                        weekendsDuration = 1;
                         weekendsDuration += weekEnds[j].EndDate.Day - weekEnds[j].StartDate.Day;
                         endDate = endDate.AddDays(weekendsDuration);
                         j++;
                     }
-                    endDate = endDate.AddDays(1);
+                    else
+                    {
+                        endDate = endDate.AddDays(1);
+                        i++;
+                    }
                 }
             }
             return endDate;
